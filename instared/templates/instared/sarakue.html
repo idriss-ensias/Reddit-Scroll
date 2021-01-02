@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+{% load static %}
+<link rel="shortcut icon" href="{% static 'instared/co.ico' %}" />
+<title>{{ post.title }}</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="http://code.jquery.com/jquery-latest.min.js"></script> 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<style>
+#mage {
+	width: 100% !important;
+}
+body {
+  margin: 0;
+  font-family: Arial;
+  background: black !important;
+}
+</style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top bg-danger">
+  <a class="navbar-brand" href="#"></a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="/instared/feed">Home <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item active">
+        <a class="nav-link" href="/instared/subr">Subreddits</a>
+      </li>
+	  <li class="nav-item active">
+        <a class="nav-link" href="/instared/authr">Redditors</a>
+      </li>
+	  <li class="nav-item active">
+        <a class="nav-link" href="/instared/updates">Updates</a>
+      </li>
+    </ul>
+	<form class="form-inline my-2 my-lg-0" action="javascript:void(0);" onsubmit="jibol()">
+      <input id="lookitupbitch" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+      <button class="btn btn-dark my-2 my-sm-0" type="submit">Search</button>
+    </form>
+  </div>
+</nav>
+</br>
+</br></br>
+<div class="container-fluid" style="width: 100%;">
+<div class="row">
+  <div class="col"><img id="mage" class="border border-danger rounded" src="{{ post.url }}"></div>
+  <div class="col">
+	<ul class="list-group">
+  <li class="list-group-item bg-danger text-white" >Title</li>
+  <li class="list-group-item">{{ post.title }}</li>
+  <li class="list-group-item bg-danger text-white">Score</li>
+  <li class="list-group-item">{{ post.score }}</li>
+  <li class="list-group-item bg-danger text-white">Url</li>
+  <li class="list-group-item">{{ post.url }}</li>
+  <li class="list-group-item bg-danger text-white">Author</li>
+  <li class="list-group-item">{{ post.author }}</li>
+  <li class="list-group-item bg-danger text-white">Subreddit</li>
+  <li class="list-group-item">{{ post.subs.title }}</li>
+</ul>
+	<button class="btn btn-danger text-white" style="margin-left: 18em; margin-top: 2em;" onclick="fifo()">Go to post on Reddit</button>
+	</br></br>
+	{% for i in comlist %}
+	<div class="bg-primary text-white" style="margin:5px;"><p style="margin-left: 1em;">{{i.0}}</p></div>
+	{%for j in i.1 %}
+	<div class="bg-warning text-black"><p style="margin-left: 3em;">{{ j }}</p></div>
+	{% endfor %}
+	{% endfor %}
+  </div>
+</div>
+</div>
+<script>
+function jibol(){
+	window.open("/instared/look/"+document.getElementById("lookitupbitch").value.trim()+"/","_blank");
+}
+function fifo(){
+	window.open("{{ permalink }}","_blank");
+}
+</script>
+</body>
+</html>

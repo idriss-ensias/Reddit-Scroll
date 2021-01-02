@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+{% load static %}
+<link rel="shortcut icon" href="{% static 'instared/co.ico' %}" />
+<title>Subreddits</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="http://code.jquery.com/jquery-latest.min.js"></script> 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<style>
+body {
+  background: black !important;
+}
+</style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top bg-danger">
+  <a class="navbar-brand" href="#"></a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="/instared/feed">Home <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item active">
+        <a class="nav-link" href="/instared/subr">Subreddits</a>
+      </li>
+	  <li class="nav-item active">
+        <a class="nav-link" href="/instared/authr">Redditors</a>
+      </li>
+	  <li class="nav-item active">
+        <a class="nav-link" href="/instared/updates">Updates</a>
+      </li>
+	  </li>
+	  <li class="nav-item active">
+        <a class="nav-link" href="#">Settings</a>
+      </li>
+    </ul>
+	<form class="form-inline my-2 my-lg-0" action="javascript:void(0);" onsubmit="jibol()">
+      <input id="lookitupbitch" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+      <button class="btn btn-dark my-2 my-sm-0" type="submit">Search</button>
+    </form>
+  </div>
+</nav>
+</br></br></br>
+<div class="addsub">
+<form class="form-inline" style="width: 100%;" action="javascript:void(0);" onsubmit="subsub()">
+<input type="text" class="form-control" style="width: 70%; margin: 1em;" value="Subreddit" />
+<button type="submit" class="btn btn-danger" style="width: 20%;" >Add Sub</button>
+</form>
+</div>
+<script>
+function jibol(){
+	window.open("look/"+document.getElementById("lookitupbitch").value.trim()+"/","_blank");
+}
+function subsub(){
+	title = document.getElementsByClassName("addsub")[0].getElementsByTagName("input")[0].value;
+	if((title.length==0)||(title==="Subreddit")){
+		console.log("nothing");
+	} else {
+		console.log(title);
+		var newsub_req = new XMLHttpRequest();
+		newsub_req.onreadystatechange = function() {
+			if(this.readyState == 4 && this.status == 200) {
+				resp = JSON.parse(this.responseText);
+				if (resp.code === 0){
+					newdiv = document.createElement("div");
+					newdiv.setAttribute("class","alert alert-success alert-dismissible fade show");
+					newdiv.setAttribute("role","alert");
+					newdiv.innerHTML = "Subreddit added succesfully :)";
+					closenew = document.createElement("button");
+					closenew.setAttribute("type","button");
+					closenew.setAttribute("class","close");
+					closenew.setAttribute("data-dismiss","alert");
+					closenew.setAttribute("aria-label","Close");
+					spannew = document.createElement("span");
+					spannew.setAttribute("aria-hidden","true");
+					spannew.innerHTML = "&times;";
+					closenew.appendChild(spannew);
+					newdiv.appendChild(closenew);
+					document.getElementsByClassName("addsub")[0].appendChild(newdiv);
+				} else if (resp.code === 1){
+					newdiv = document.createElement("div");
+					newdiv.setAttribute("class","alert alert-warning alert-dismissible fade show");
+					newdiv.setAttribute("role","alert");
+					newdiv.innerHTML = "Sorry this subreddit does not exist, check if you wrote the subs name correctly :(";
+					closenew = document.createElement("button");
+					closenew.setAttribute("type","button");
+					closenew.setAttribute("class","close");
+					closenew.setAttribute("data-dismiss","alert");
+					closenew.setAttribute("aria-label","Close");
+					spannew = document.createElement("span");
+					spannew.setAttribute("aria-hidden","true");
+					spannew.innerHTML = "&times;";
+					closenew.appendChild(spannew);
+					newdiv.appendChild(closenew);
+					document.getElementsByClassName("addsub")[0].appendChild(newdiv);
+				} else if (resp.code === 2){
+					newdiv = document.createElement("div");
+					newdiv.setAttribute("class","alert alert-primary alert-dismissible fade show");
+					newdiv.setAttribute("role","alert");
+					newdiv.innerHTML = "This subreddit is already registered";
+					closenew = document.createElement("button");
+					closenew.setAttribute("type","button");
+					closenew.setAttribute("class","close");
+					closenew.setAttribute("data-dismiss","alert");
+					closenew.setAttribute("aria-label","Close");
+					spannew = document.createElement("span");
+					spannew.setAttribute("aria-hidden","true");
+					spannew.innerHTML = "&times;";
+					closenew.appendChild(spannew);
+					newdiv.appendChild(closenew);
+					document.getElementsByClassName("addsub")[0].appendChild(newdiv);
+				} else {
+					newdiv = document.createElement("div");
+					newdiv.setAttribute("class","alert alert-danger alert-dismissible fade show");
+					newdiv.setAttribute("role","alert");
+					newdiv.innerHTML = "Something went wrong, check the request sent to the server or the code in views.py or models.py";
+					closenew = document.createElement("button");
+					closenew.setAttribute("type","button");
+					closenew.setAttribute("class","close");
+					closenew.setAttribute("data-dismiss","alert");
+					closenew.setAttribute("aria-label","Close");
+					spannew = document.createElement("span");
+					spannew.setAttribute("aria-hidden","true");
+					spannew.innerHTML = "&times;";
+					closenew.appendChild(spannew);
+					newdiv.appendChild(closenew);
+					document.getElementsByClassName("addsub")[0].appendChild(newdiv);
+				}
+			}
+		}
+		newsub_req.open("POST","newsub");
+		newsub_req.send('{"title" : "'+title+'"}');
+	}
+}
+subs = [];
+var sub_req = new XMLHttpRequest();
+	sub_req.onreadystatechange = function() {
+		if(this.readyState == 4 && this.status == 200) {
+			subs = JSON.parse(this.responseText);
+			console.log(subs);
+			display_subs();
+		}
+	}
+	sub_req.open("GET","subs");
+	sub_req.send();
+function quatro(arr){
+product = [];
+if(arr.length<4){
+	product.push(new Array());
+}
+for(i=1;i<=arr.length;i++){
+	if(arr.length>3){
+		if(i%4==0){
+			product.push([arr[i-4],arr[i-3],arr[i-2],arr[i-1]])
+			console.log("hey");
+			if((arr.length-i<4)&&(i!=arr.length)){
+				console.log("get")
+				leftover = [];
+				for(j=1;j<=(arr.length-i);j++){
+					leftover.push(arr[i+j-1]);
+				}
+				product.push(leftover);
+			}
+		}
+	} else {
+		product[0].push(arr[i-1]);
+	}
+}
+console.log(product);
+return product;
+}
+function display_subs(){
+	numrows = Math.floor(subs.length/4)+1;
+	forofor = quatro(subs);
+	console.log(forofor);
+	for(k=0;k<forofor.length;k++){
+		row = document.createElement("row");
+		row.setAttribute("class","row");
+		for(m=0;m<forofor[k].length;m++){
+			row.appendChild(get_div(forofor[k][m]));
+		}
+		document.body.appendChild(row);
+	}
+	}
+function get_div(sub){
+	pro = Math.floor((sub.progress/sub.numposts)*100);
+	column = document.createElement("div");
+	column.setAttribute("class","column");
+	column.setAttribute("style","width: 25%");
+	card = document.createElement("div");
+	card.setAttribute("class","card bg-dark text-white");
+	card.setAttribute("style","width: 90%; margin: 1em;");
+	subimg = new Image();
+	subimg.src = sub.bestimage;
+	subimg.setAttribute("class","card-img-top rounded-circle");
+	subimg.setAttribute("width", "50%");
+	subimg.setAttribute("height","300");
+	cardbody = document.createElement("div");
+	cardbody.setAttribute("class","card-body");
+	cardtitle = document.createElement("h4");
+	cardtitle.setAttribute("class","card-title");
+	cardtitle.setAttribute("style","color: red !important;");
+	cardtitle.innerHTML = "<strong>"+sub.title+"</strong>";
+	ul = document.createElement("ul");
+	ul.setAttribute("class","list-group list-group-flush");
+	ul.setAttribute("style","color: black !important;");
+	lio = document.createElement("li");
+	lit = document.createElement("li");
+	lio.setAttribute("class","list-group-item");
+	lit.setAttribute("class","list-group-item");
+	lio.innerHTML = "<strong>Number of Posts : </strong>"+sub.numposts+"";
+	lit.innerHTML = "<strong>Number of Hits : </strong>"+sub.hits+"";
+	pertitle = document.createElement("h5");
+	pertitle.setAttribute("style","margin-top: 1em;");
+	pertitle.innerHTML = "Seen :";
+	progress = document.createElement("div");
+	progress.setAttribute("class","progress");
+	progress.setAttribute("style","margin-top: 1em;");
+	progressbar = document.createElement("div");
+	progressbar.setAttribute("class","progress-bar bg-success");
+	progressbar.setAttribute("role","progressbar");
+	progressbar.setAttribute("style","width: "+pro+"%;");
+	progressbar.setAttribute("aria-valuenow",pro);
+	progressbar.setAttribute("aria-valuemin",0);
+	progressbar.setAttribute("aria-valuemax",100);
+	detail = document.createElement("a");
+	detail.setAttribute("href","feed/"+sub.id);
+	detail.setAttribute("class","btn btn-danger");
+	detail.setAttribute("style","margin-top: 1em;");
+	detail.setAttribute("target","_blank");
+	detail.innerHTML = "More";
+	del = document.createElement("a");
+	del.onclick = function() {
+		delres = confirm("Are you sure you want to delete this subreddit ?");
+		if (delres == true){
+			var delsub_req = new XMLHttpRequest();
+			delsub_req.onreadystatechange = function(){
+				if(this.readyState == 4 && this.status == 200) {
+					location.reload();
+					return false;
+				}	
+			}
+			delsub_req.open("GET","delsub/"+sub.id);
+			delsub_req.send();
+		}
+		}
+	del.setAttribute("href","javascript:void(0);");
+	del.setAttribute("class","btn btn-danger");
+	del.setAttribute("style","margin-top: 1em; margin-left: 1em;");
+	del.innerHTML = "Delete";
+	refre = document.createElement("a");
+	refre.setAttribute("class","btn btn-danger");
+	refre.onclick = function () {
+		var subrefre_req = new XMLHttpRequest();
+		subrefre_req.onreadystatechange = function(){
+			if(this.readyState == 4 && this.status == 200) {
+					console.log("hihi");
+				}	
+		}
+		subrefre_req.open("GET","refre/"+sub.id+"/");
+		subrefre_req.send();
+	}
+	refre.setAttribute("style","margin-top: 1em; margin-left: 1em;");
+	refre.innerHTML = "Refresh";
+	ul.appendChild(lio);
+	ul.appendChild(lit);
+	progress.appendChild(progressbar);
+	cardbody.appendChild(cardtitle);
+	cardbody.appendChild(ul);
+	cardbody.appendChild(pertitle);
+	cardbody.appendChild(progress);
+	cardbody.appendChild(detail);
+	cardbody.appendChild(del);
+	cardbody.appendChild(refre);
+	card.appendChild(subimg);
+	card.appendChild(cardbody);
+	column.appendChild(card);
+	return column;
+}
+</script>
+</body>
+</html>

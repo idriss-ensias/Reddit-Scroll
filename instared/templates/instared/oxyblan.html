@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+{% load static %}
+<link rel="shortcut icon" href="{% static 'instared/co.ico' %}" />
+<title>Updates</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="http://code.jquery.com/jquery-latest.min.js"></script> 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<style>
+
+body {
+  margin: 0;
+  font-family: Arial;
+  background: black !important;
+}
+
+.scrolls{
+	height: auto;
+    max-height: 200px;
+    overflow-x: hidden;
+}
+</style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top bg-danger">
+  <a class="navbar-brand" href="#"></a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="/instared/feed">Home <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item active">
+        <a class="nav-link" href="/instared/subr">Subreddits</a>
+      </li>
+	  <li class="nav-item active">
+        <a class="nav-link" href="/instared/authr">Redditors</a>
+      </li>
+	  <li class="nav-item active">
+        <a class="nav-link" href="/instared/updates">Updates</a>
+      </li>
+    </ul>
+	<form class="form-inline my-2 my-lg-0" action="javascript:void(0);" onsubmit="jibol()">
+      <input id="lookitupbitch" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+      <button class="btn btn-dark my-2 my-sm-0" type="submit">Search</button>
+    </form>
+  </div>
+</nav>
+</br>
+</br></br>
+<ul>
+    <li class="dropdown" id="subos" style="display: inline;">
+        <button data-toggle="dropdown" class="btn btn-secondary dropdown-toggle">Subreddits<b class="caret"></b></button>
+        <ul class="dropdown-menu  scrolls">
+            <li>
+                <div class="checkbox">
+                    <button type="button" class="btn btn-primary" style="width: 100%;" onclick="allify()">All</button>
+                </div>
+            </li>
+			<li>
+                <div class="checkbox">
+                    <button type="button" class="btn btn-danger" style="width: 100%;" onclick="nullify()">Null</button>
+                </div>
+            </li>
+			<div class="dropdown-divider"></div>
+			{% for bus in subs %}
+			<li>
+                <div class="checkbox">
+                    <label>
+                        <input id="{{ bus.title }}" type="checkbox"> {{bus.title}}</input>
+                    </label>
+                </div>
+            </li>
+			{% endfor %}
+        </ul>
+    </li>
+	<li style="display: inline;"><button class="btn btn-success" onclick="update()">Update</button></li>
+	<li style="display: inline;"><button class="btn btn-warning" onclick="uplo()">Update All</button></li>
+</ul>
+<table class="table table-hover" style="width: 75%; margin: 3em;">
+<thread class="thread-dark">
+<tr class="bg-danger text-white">
+<th>Sub</th>
+<th>Date</th>
+<th>Number</th>
+</tr>
+</thread>
+<tbody>
+{% for upd in updates %}
+{% if upd.posts_retreived == 0 %}
+<tr class="table-danger">
+<td>{{ upd.subs.title }}</td>
+<td>{{ upd.update_date }}</td>
+<td>{{ upd.posts_retreived }}</td>
+</tr>
+{% else %}
+<tr class="table-light">
+<td>{{ upd.subs.title }}</td>
+<td>{{ upd.update_date }}</td>
+<td>{{ upd.posts_retreived }}</td>
+</tr>
+{% endif %}
+{% endfor %}
+</tbody>
+</table>
+</div>
+<script>
+function jibol(){
+	window.open("/instared/look/"+document.getElementById("lookitupbitch").value.trim()+"/","_blank");
+}
+function update(){
+	subos = document.getElementById("subos");
+	dodo = subos.getElementsByTagName("input");
+	for(i=0;i<dodo.length;i++){
+		if(dodo[i].checked === true){
+			subup(dodo[i].id);
+		}
+	}
+}
+function allify(){
+	subos = document.getElementById("subos");
+	dodo = subos.getElementsByTagName("input");
+	for(i=0;i<dodo.length;i++){
+		if(dodo[i].checked === false){
+			dodo[i].checked = true;
+		}
+	}
+}
+function nullify(){
+	subos = document.getElementById("subos");
+	dodo = subos.getElementsByTagName("input");
+	for(i=0;i<dodo.length;i++){
+		if(dodo[i].checked === true){
+			dodo[i].checked = false;
+		}
+	}
+}
+function uplo(){
+	var request_uplo = new XMLHttpRequest();
+	request_uplo.onreadystatechange = function () {
+		if (this.readyState == 4 && this.status == 200) {
+			console.log("updated");
+		}
+	}
+	request_uplo.open("GET","uplo/");
+	request_uplo.send();
+}
+function subup(subtit){
+	var request_subs = new XMLHttpRequest();
+	request_subs.onreadystatechange = function () {
+		if (this.readyState == 4 && this.status == 200) {
+			console.log(subtit+" updated");
+		}
+	}
+	request_subs.open("GET","up/"+subtit+"/");
+	request_subs.send();
+}
+</script>
+</body>
+</html>

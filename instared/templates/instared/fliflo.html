@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+{% load static %}
+<link rel="shortcut icon" href="{% static 'instared/co.ico' %}" />
+<title>{{ searchd }}</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="http://code.jquery.com/jquery-latest.min.js"></script> 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial;
+  background: black !important;
+}
+
+.header {
+  text-align: center;
+  padding: 32px;
+}
+
+.row {
+  display: -ms-flexbox; /* IE10 */
+  display: flex;
+  -ms-flex-wrap: wrap; /* IE10 */
+  flex-wrap: wrap;
+  padding: 0 4px;
+}
+
+.overlay {
+  position: absolute; 
+  top: 0; 
+  color: #f1f1f1; 
+  width: 100%;
+  transition: .5s ease;
+  opacity:0;
+  color: white;
+  font-size: 20px;
+  padding: 20px;
+  text-align: right; 
+}
+
+.layover {
+  position: absolute; 
+  top: 0; 
+  color: #f1f1f1; 
+  width: 50%;
+  transition: .5s ease;
+  opacity:0;
+  color: white;
+  font-size: 20px;
+  padding: 20px;
+  text-align: left; 
+}
+
+.asspic .layover a {
+	margin-bottom: 1em;
+}
+
+.asspic .overlay .closeimg {
+	width: 10%;
+	height: 20;
+}
+
+.asspic:hover .overlay {
+	opacity: 1;
+}
+
+.asspic:hover .layover {
+	opacity: 1;
+}
+
+.asspic {
+  position: relative;
+}
+
+/* Create four equal columns that sits next to each other */
+.column {
+  -ms-flex: 25%; /* IE10 */
+  flex: 25%;
+  max-width: 25%;
+  padding: 0 4px;
+}
+
+.column .asspic img {
+  margin-top: 8px;
+  vertical-align: middle;
+  width: 100%;
+}
+/* Responsive layout - makes a two column-layout instead of four columns */
+@media screen and (max-width: 800px) {
+  .column {
+    -ms-flex: 50%;
+    flex: 50%;
+    max-width: 50%;
+  }
+}
+
+/* Responsive layout - makes the two columns stack on top of each other instead of next to each other */
+@media screen and (max-width: 600px) {
+  .column {
+    -ms-flex: 100%;
+    flex: 100%;
+    max-width: 100%;
+  }
+}
+</style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top bg-danger">
+  <a class="navbar-brand" href="#"></a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="/instared/feed">Home <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item active">
+        <a class="nav-link" href="/instared/subr">Subreddits</a>
+      </li>
+	  <li class="nav-item active">
+        <a class="nav-link" href="/instared/authr">Redditors</a>
+      </li>
+	  <li class="nav-item active">
+        <a class="nav-link" href="/instared/updates">Updates</a>
+      </li>
+	  </li>
+	  <li class="nav-item active">
+        <a class="nav-link" href="#">Settings</a>
+      </li>
+    </ul>
+	<form class="form-inline my-2 my-lg-0" action="javascript:void(0);" onsubmit="jibol()">
+      <input id="lookitupbitch" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+      <button class="btn btn-dark my-2 my-sm-0" type="submit">Search</button>
+    </form>
+  </div>
+</nav>
+</br>
+</br>
+<div class="row" >
+  <div class="column" id="0"></div>
+  <div class="column" id="1"></div>
+  <div class="column" id="2"></div>
+  <div class="column" id="3"></div>
+  <p></br></br></p>
+</div>
+<script>
+function jibol(){
+	window.open("/instared/look/"+document.getElementById("lookitupbitch").value.trim()+"/","_blank");
+}
+Array.min = function( array ){
+    return Math.min.apply( Math, array );
+};
+var column_heights = [0,0,0,0];
+all_posts = [];
+all_videos = [];
+subs = []
+posts = [];
+videos = [];
+act_posts = [];
+reached = 0;
+fetch_lock = 1;
+index = -1;
+function showit(){
+	waitanim = document.createElement("div");
+	waitanim.setAttribute("id","fetchprog")
+	waitanim.setAttribute("class","progress");
+	waitanim.setAttribute("style","width: 100%;");
+	waitstat = document.createElement("div");
+	waitstat.setAttribute("id","fetchstat")
+	waitstat.setAttribute("class","progress-bar bg-success");
+	waitstat.setAttribute("role","progressbar");
+	waitstat.setAttribute("style","width: 0%");
+	waitstat.setAttribute("aria-valuenow",0);
+	waitstat.setAttribute("aria-valuemin",0);
+	waitstat.setAttribute("aria-valuemax",10);
+	waitanim.appendChild(waitstat);
+	document.getElementsByClassName("row")[0].insertBefore(waitanim,document.getElementsByClassName("row")[0].children[4]);
+	}
+function removeit(){
+	document.getElementById("fetchprog").remove();
+}
+function like_p(postid){
+	var likep_req = new XMLHttpRequest();
+	likep_req.onreadystatechange = function() {
+		if(this.readyState == 4 && this.status == 200) {
+			console.log("l");
+		}
+	}
+	likep_req.open("GET","/instared/likep/"+postid);
+	likep_req.send();
+}
+function like_v(postid){
+	var likev_req = new XMLHttpRequest();
+	likev_req.onreadystatechange = function() {
+		if(this.readyState == 4 && this.status == 200) {
+			console.log("l");
+		}
+	}
+	likev_req.open("GET","/instared/likev/"+postid);
+	likev_req.send();
+}
+function dlike_p(postid){
+	var dlikep_req = new XMLHttpRequest();
+	dlikep_req.onreadystatechange = function() {
+		if(this.readyState == 4 && this.status == 200) {
+			console.log("l");
+		}
+	}
+	dlikep_req.open("GET","/instared/dlikep/"+postid);
+	dlikep_req.send();
+}
+function dlike_v(postid){
+	var dlikev_req = new XMLHttpRequest();
+	dlikev_req.onreadystatechange = function() {
+		if(this.readyState == 4 && this.status == 200) {
+			console.log("l");
+		}
+	}
+	dlikev_req.open("GET","/instared/dlikev/"+postid);
+	dlikev_req.send();
+}
+function remp(postid){
+	var remp_req = new XMLHttpRequest();
+	remp_req.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			console.log("sent");
+			}
+	}
+	remp_req.open("GET","/instared/delp/"+postid)
+	remp_req.send()
+}
+function remv(postid){
+	var remv_req = new XMLHttpRequest();
+	remv_req.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			console.log("sent");
+			}
+	}
+	remv_req.open("GET","/instared/delv/"+postid)
+	remv_req.send()
+}
+function delp(jsontext){
+	var delp_req = new XMLHttpRequest();
+	delp_req.onreadystatechange = function () {
+		if(this.readyState == 4){
+			console.log("hello");
+		}
+	}
+	delp_req.open("POST","/instared/deletep");
+	delp_req.send(jsontext);
+}
+function delv(jsontext){
+	var delv_req = new XMLHttpRequest();
+	delv_req.onreadystatechange = function () {
+		if(this.readyState == 4){
+			console.log("hello");
+		}
+	}
+	delv_req.open("POST","/instared/deletev");
+	delv_req.send(jsontext);
+}
+function fetch_subs() {
+	var request_subs = new XMLHttpRequest();
+	request_subs.onreadystatechange = function () {
+		if (this.readyState == 4 && this.status == 200) {
+			subs = JSON.parse(this.responseText);
+			console.log(subs);
+		}
+	}
+	request_subs.open("GET","/instared/fastsubs");
+	request_subs.send();
+}
+function get_sub_title(subid) {
+	console.log("hehehehe "+subid)
+	for(c=0;c<subs.length;c++){
+		if(subs[c].id===subid){
+			return subs[c].title;
+		}
+	}
+	return ""+subid+""
+}
+function fetch() {
+	index = index + 1;
+	fetch_subs();
+	showit();
+	var request_posts = new XMLHttpRequest();
+	var request_videos = new XMLHttpRequest();
+	request_posts.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			posts = JSON.parse(this.responseText);
+			all_posts = all_posts.concat(posts);
+			imagevideo();
+		}
+	};
+	request_videos.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			videos = JSON.parse(this.responseText);
+			all_videos = all_videos.concat(videos);
+		}
+	};
+	request_videos.open("GET", "/instared/search/listvideo/{{ searchd|safe }}/", true);
+	request_posts.open("GET", "/instared/search/posts/{{ searchd|safe }}/", true);
+	request_posts.send();
+	request_videos.send();
+}
+function imagevideo(){
+	loaded = 0;
+	act_posts = [];
+	if(posts.length>0){
+		for(i=0;i<posts.length;i++){
+			act_posts.push([posts[i],0]);
+		}
+		for(j=0;j<act_posts.length;j++){
+			act_posts[j][1] = new Image();
+			act_posts[j][1].src = act_posts[j][0].url;
+			act_posts[j][1].onerror = function () {
+				loaded++;
+				document.getElementById("fetchstat").setAttribute("style","width : "+loaded*10+"%;");
+				document.getElementById("fetchstat").setAttribute("aria-valuenow",loaded);
+				if(loaded===act_posts.length){
+					console.log("lido "+loaded);
+					removeit();
+					structure(shuffle(act_posts.concat(videos)));
+				}
+			}
+			act_posts[j][1].onload = function () {
+				loaded++;
+				document.getElementById("fetchstat").setAttribute("style","width : "+loaded*10+"%;");
+				document.getElementById("fetchstat").setAttribute("aria-valuenow",loaded);
+				console.log(loaded);
+				if(loaded===act_posts.length){
+					console.log("lido "+loaded);
+					removeit();
+					structure(shuffle(act_posts.concat(videos)));
+				}
+			}
+		}	
+	} 
+}
+function image_div(image,column){
+	var asspic = document.createElement("div");
+	asspic.setAttribute("class","asspic");
+	asspic.id = image[0].post_id;
+	asspic.appendChild(image[1]);
+	var layover = document.createElement("div");
+	layover.setAttribute("class","layover");
+	var subutt = document.createElement("a");
+	subutt.setAttribute("type","button");
+	subutt.setAttribute("class","btn btn-danger");
+	subutt.setAttribute("target","_blank");
+	subutt.setAttribute("href","/instared/feed/"+image[0].subs_id)
+	subutt.innerHTML = get_sub_title(image[0].subs_id);
+	layover.appendChild(subutt);
+	var overlay = document.createElement("div");
+	overlay.setAttribute("class","overlay");
+	var debutt = new Image();
+	debutt.setAttribute("class","closeimg");
+	debutt.setAttribute("src","{% static 'instared/detail.png' %}");
+	debutt.onclick = function () {
+		window.open("/instared/p/"+image[0].id,"_blank");
+	}
+	var bigbutt = new Image();
+	bigbutt.setAttribute("class","closeimg");
+	bigbutt.setAttribute("src","{% static 'instared/bigger.png' %}");
+	bigbutt.onclick = function() {
+		window.open(image[0].url,"_blank");
+	}
+	var closebutt = new Image();
+	closebutt.setAttribute("class","closeimg");
+	closebutt.setAttribute("src","{% static 'instared/close3.png' %}");
+	closebutt.onclick = function() {
+		column_heights[this.parentElement.parentElement.parentElement.id] = column_heights[this.parentElement.parentElement.parentElement.id] - this.parentElement.parentElement.clientHeight;
+		remp(all_posts[get_post(this.parentElement.parentElement.id)].id);
+		this.parentElement.parentElement.style.display="none";
+	};
+	var likebutt = new Image();
+	likebutt.setAttribute("class","closeimg");
+	if(image[0].like === 1){
+		likebutt.setAttribute("src","{% static 'instared/heart.png' %}");
+	} else {
+		likebutt.setAttribute("src","{% static 'instared/he.png' %}");
+	}
+	likebutt.onclick = function() {
+		website = window.location.protocol+"//"+window.location.hostname+":"+window.location.port;
+		if(this.src===website+"{% static 'instared/heart.png' %}"){
+			dlike_p(all_posts[get_post(this.parentElement.parentElement.id)].id);
+			this.src="{% static 'instared/he.png' %}";
+		} else {
+			like_p(all_posts[get_post(this.parentElement.parentElement.id)].id);
+			this.src="{% static 'instared/heart.png' %}";
+		}
+	};
+	overlay.appendChild(likebutt);
+	overlay.appendChild(debutt);
+	overlay.appendChild(bigbutt);
+	overlay.appendChild(closebutt);
+	asspic.appendChild(overlay);
+	asspic.appendChild(layover);
+	document.getElementsByClassName("column")[column].appendChild(asspic);
+	column_heights[column] = column_heights[column] + image[1].height;
+}
+function video_div(iframe,column){
+	var asspic = document.createElement("div");
+	asspic.setAttribute("class","asspic");
+	asspic.id = iframe.post_id;
+	asspic.innerHTML = iframe.src;
+	asspic.getElementsByTagName("iframe")[0].width = "100%";
+	var layover = document.createElement("div");
+	layover.setAttribute("class","layover");
+	var subutt = document.createElement("a");
+	subutt.setAttribute("type","button");
+	subutt.setAttribute("class","btn btn-danger");
+	subutt.setAttribute("target","_blank");
+	subutt.setAttribute("href","/instared/feed/"+iframe.subs_id)
+	subutt.innerHTML = get_sub_title(iframe.subs_id);
+	layover.appendChild(subutt);
+	var overlay = document.createElement("div");
+	overlay.setAttribute("class","overlay");
+	var closebutt = new Image()
+	closebutt.setAttribute("class","closeimg");
+	closebutt.setAttribute("src","{% static 'instared/close3.png' %}");
+	closebutt.onclick = function() {
+		column_heights[this.parentElement.parentElement.parentElement.id] = column_heights[this.parentElement.parentElement.parentElement.id] - this.parentElement.parentElement.clientHeight;
+		remv(all_videos[get_video(this.parentElement.parentElement.id)].id);
+		this.parentElement.parentElement.style.display="none";
+	};
+	var likebutt = new Image();
+	likebutt.setAttribute("class","closeimg");
+	if(iframe.like === 1){
+		likebutt.setAttribute("src","{% static 'instared/heart.png' %}");
+	} else {
+		likebutt.setAttribute("src","{% static 'instared/he.png' %}");
+	}
+	likebutt.onclick = function() {
+		website = window.location.protocol+"//"+window.location.hostname+":"+window.location.port;
+		if(this.src===website+"{% static 'instared/heart.png' %}"){
+			dlike_v(all_videos[get_video(this.parentElement.parentElement.id)].id);
+			this.src="{% static 'instared/he.png' %}";
+		} else {
+			like_v(all_videos[get_video(this.parentElement.parentElement.id)].id);
+			this.src="{% static 'instared/heart.png' %}";
+		}
+	};
+	var debutt = new Image();
+	debutt.setAttribute("class","closeimg");
+	debutt.setAttribute("src","{% static 'instared/detail.png' %}");
+	debutt.onclick = function () {
+		window.open("/instared/v/"+iframe.id,"_blank");
+	}
+	overlay.appendChild(likebutt);
+	overlay.appendChild(debutt);
+	overlay.appendChild(closebutt);
+	asspic.appendChild(overlay);
+	asspic.appendChild(layover);
+	document.getElementsByClassName("column")[column].appendChild(asspic);
+	column_heights[column] = column_heights[column] + iframe.height;
+}
+function structure(everything){
+	console.log("si si "+everything.length);
+	for(k=0;k<everything.length;k++){
+		if(Array.isArray(everything[k])){
+			image_div(everything[k],column_heights.indexOf(Array.min(column_heights)));
+		} else {
+			video_div(everything[k],column_heights.indexOf(Array.min(column_heights)));
+		}
+	}
+	posts = [];
+	videos = [];
+	act_posts = [];
+}
+function get_post(post_id){
+	for(a=0;a<all_posts.length;a++){
+		if (all_posts[a].post_id === post_id){
+			return a;
+		}
+	}
+}
+function get_video(post_id){
+	for(b=0;b<all_videos.length;b++){
+		if (all_videos[b].post_id === post_id){
+			return b;
+		}
+	}
+}
+function shuffle(arr) {
+	new_arr = [];
+	shuffled = [];
+	while(new_arr.length != arr.length) {
+		ele = Math.floor(Math.random() * arr.length);
+		if(shuffled.indexOf(ele)===-1){
+			new_arr.push(arr[ele]);
+			shuffled.push(ele);
+		}
+	}
+	return new_arr;
+}
+function fetch_butt() {
+	if (fetch_lock === 1){
+		fetch_lock = 0;
+		fetch();
+		fetch_lock = 1;
+	}
+}
+fetch_butt();
+</script>
+</body>
+</html>
