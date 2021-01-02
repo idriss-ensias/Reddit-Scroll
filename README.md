@@ -19,9 +19,10 @@ Many features in the website were added as i was working on it
   
 ## Requirements
 To start you need :  
-### PRAW : interact with the reddit API
-### BeautifulSoup : process html from PRAW submissions
-### Django-Rest-Framework : I use rest for some features of the website  
+### PRAW : interact with the reddit API (pip3 install praw)
+### BeautifulSoup : process html from PRAW submissions (pip3 install beautifulsoup4)
+### Django-Rest-Framework : I use rest for some features of the website (pip3 install django-rest-framework)
+### Django-Cors-Headers : To fetch json data (pip3 install django-cors-headers)
 This project also uses Native javascript, Bootstrap and django 
 ## Media 
 You can like, delete, view details or enlarge a media element  
